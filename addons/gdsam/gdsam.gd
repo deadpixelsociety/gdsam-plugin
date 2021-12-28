@@ -2,6 +2,7 @@ tool
 extends Node
 
 signal finished_speaking()
+signal finished_phrase()
 
 const DEFAULT_SPEED = 72
 const DEFAULT_PITCH = 64
@@ -152,6 +153,7 @@ func _configure_player(player):
 
 func _process_queue():
 	if _interrupt or _queue.size() == 0:
+		emit_signal("finished_speaking")
 		return
 	var phrase = _queue.pop_front()
 	var buffer = _gdsam.speak(phrase) as PoolByteArray
@@ -163,7 +165,7 @@ func _process_queue():
 	_current_player.stream = _sample
 	_current_player.play()
 	yield(_current_player, "finished")
-	emit_signal("finished_speaking")
+	emit_signal("finished_phrase")
 
 
 func _on_finished_speaking():
