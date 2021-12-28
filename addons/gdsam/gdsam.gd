@@ -11,6 +11,7 @@ const DEFAULT_VOLUME = 1.0
 const DEFAULT_SINGING = false
 const DEFAULT_PHONETIC = false
 const DEFAULT_AUDIO_BUS = "Master"
+const MAX_CHARS = 90
 
 export(int, 0, 255) var speed = DEFAULT_SPEED
 export(int, 0, 255) var pitch = DEFAULT_PITCH
@@ -21,37 +22,45 @@ export(bool) var phonetic = DEFAULT_PHONETIC
 export(float, 0, 1) var volume = DEFAULT_VOLUME
 export(String) var audio_bus = DEFAULT_AUDIO_BUS
 
+var _current_player
+var _interrupt = false
 var _player
 var _player2D
+var _sample: AudioStreamSample
+var _queue = []
 
 onready var _gdsam = preload("res://addons/gdsam/bin/gdsam.gdns").new()
 
 
 func _ready():
+	self.connect("finished_speaking", self, "_on_finished_speaking")	
 	_player = AudioStreamPlayer.new()
-	add_child(_player)
 	_player2D = AudioStreamPlayer2D.new()
+	_sample = AudioStreamSample.new()
+	_sample.mix_rate = 22050
+	_sample.format = AudioStreamSample.FORMAT_8_BITS
+	add_child(_player)
 	add_child(_player2D)
 
 
 func speak(input: String, positional: bool = false):
+	_interrupt = false
 	_configure_sam()
-	var player = _player if not positional else _player2D
-	_configure_player(player)
-	var buffer = _gdsam.speak(input) as PoolByteArray
-	if not buffer:
-		return
-	if player.playing:
-		player.stop()
-	player.stream = _create_sample(buffer)
-	player.play()
-	yield(player, "finished")
-	emit_signal("finished_speaking")
+	_current_player = _player if not positional else _player2D
+	_configure_player(_current_player)
+	_enqueue_phrases(input)
+	_process_queue()
 
 
 func speak2D(input: String, position: Vector2):
 	_player2D.position = position
 	speak(input, true)
+
+
+func interrupt():
+	_interrupt = true
+	if _current_player:
+		_current_player.stop()
 
 
 func stop():
@@ -106,12 +115,25 @@ func set_voice_old_lady():
 	throat = 145
 
 
-func _create_sample(buffer: PoolByteArray) -> AudioStreamSample:
-	var sample = AudioStreamSample.new()
-	sample.mix_rate = 22050
-	sample.format = AudioStreamSample.FORMAT_8_BITS
-	sample.data = buffer
-	return sample
+func _enqueue_phrases(input: String):
+	_queue.clear()
+	_create_phrases(input)
+
+
+func _create_phrases(input: String):
+	if input.length() <= MAX_CHARS:
+		_queue.append(input)
+		return
+	var phrase = input.substr(0, MAX_CHARS)
+	var i = phrase.length() - 1
+	while phrase[i] != ' ' and i >= 0:
+		i -= 1
+	if i <= 0:
+		_queue.append(phrase)
+		_create_phrases(input.substr(MAX_CHARS + 1))
+	else:
+		_queue.append(phrase.substr(0, i))
+		_create_phrases(input.substr(i + 1))
 
 
 func _configure_sam():
@@ -126,3 +148,23 @@ func _configure_sam():
 func _configure_player(player):
 	player.bus = audio_bus
 	player.volume_db = linear2db(volume)
+
+
+func _process_queue():
+	if _interrupt or _queue.size() == 0:
+		return
+	var phrase = _queue.pop_front()
+	var buffer = _gdsam.speak(phrase) as PoolByteArray
+	if not buffer:
+		return
+	if _current_player.playing:
+		_current_player.stop()
+	_sample.data = buffer
+	_current_player.stream = _sample
+	_current_player.play()
+	yield(_current_player, "finished")
+	emit_signal("finished_speaking")
+
+
+func _on_finished_speaking():
+	_process_queue()
