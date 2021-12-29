@@ -34,7 +34,6 @@ onready var _gdsam = preload("res://addons/gdsam/bin/gdsam.gdns").new()
 
 
 func _ready():
-	self.connect("finished_speaking", self, "_on_finished_speaking")	
 	_player = AudioStreamPlayer.new()
 	_player2D = AudioStreamPlayer2D.new()
 	_sample = AudioStreamSample.new()
@@ -166,7 +165,4 @@ func _process_queue():
 	_current_player.play()
 	yield(_current_player, "finished")
 	emit_signal("finished_phrase")
-
-
-func _on_finished_speaking():
 	_process_queue()
