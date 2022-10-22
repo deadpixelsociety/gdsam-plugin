@@ -1,8 +1,12 @@
 tool
 extends Node
 
+signal loaded_buffer(buffer, callback)
 signal finished_speaking()
 signal finished_phrase()
+
+class BufferCallback:
+	var audio_stream_override: AudioStream = null
 
 const DEFAULT_SPEED = 72
 const DEFAULT_PITCH = 64
@@ -158,10 +162,15 @@ func _process_queue():
 	var buffer = _gdsam.speak(phrase) as PoolByteArray
 	if not buffer:
 		return
+	var callback = BufferCallback.new()
+	emit_signal("loaded_buffer", buffer, callback)
 	if _current_player.playing:
 		_current_player.stop()
-	_sample.data = buffer
-	_current_player.stream = _sample
+	if not callback.audio_stream_override:
+		_sample.data = buffer
+		_current_player.stream = _sample
+	else:
+		_current_player.stream = callback.audio_stream_override
 	_current_player.play()
 	yield(_current_player, "finished")
 	emit_signal("finished_phrase")
