@@ -9,6 +9,7 @@ Usage:
 * Add a ```GDSAM``` node to your scene.
 * Call the ```speak(text)``` function to speak or ```speak2D(text, position)``` to speak positionally.
 * Call ```interrupt()``` to interrupt any queued phrases.
+* Subscribe to the ```buffer_loaded(buffer, callback)``` signal to grab the buffered speech data and provide your own audio stream before it is played.
 * Play with the ```speed```, ```pitch```, ```mouth``` and ```throat``` settings to modify the voice. Experiment!
 * Some stock voices are included based on the original demo.
   * ```set_voice_default()```
