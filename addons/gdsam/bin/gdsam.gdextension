@@ -1,0 +1,9 @@
+[configuration]
+
+entry_symbol = "gdsam_init"
+
+[libraries]
+
+macos = "macos/gdsam.dylib"
+windows.64 = "windows/gdsam.dll"
+linux.64 = "linux/libgdsam.so"

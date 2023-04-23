@@ -1,130 +1,139 @@
-tool
+@tool
 extends Node
+class_name GDSAM
 
-signal loaded_buffer(buffer, callback)
 signal finished_speaking()
-signal finished_phrase()
+signal started_phrase(phrase)
+signal finished_phrase(phrase)
 
-class BufferCallback:
-	var audio_stream_override: AudioStream = null
-
-const DEFAULT_SPEED = 72
-const DEFAULT_PITCH = 64
-const DEFAULT_MOUTH = 128
-const DEFAULT_THROAT = 128
-const DEFAULT_VOLUME = 1.0
-const DEFAULT_SINGING = false
-const DEFAULT_PHONETIC = false
-const DEFAULT_AUDIO_BUS = "Master"
+# Limit the number of characters per phrase as SAM has a buffer limit.
 const MAX_CHARS = 90
 
-export(int, 0, 255) var speed = DEFAULT_SPEED
-export(int, 0, 255) var pitch = DEFAULT_PITCH
-export(int, 0, 255) var mouth = DEFAULT_MOUTH
-export(int, 0, 255) var throat = DEFAULT_THROAT
-export(bool) var singing = DEFAULT_SINGING
-export(bool) var phonetic = DEFAULT_PHONETIC
-export(float, 0, 1) var volume = DEFAULT_VOLUME
-export(String) var audio_bus = DEFAULT_AUDIO_BUS
+@export_range(0, 255) var speed: int:
+	set(value):
+		speed = clampi(value, 0, 255)
+@export_range(0, 255) var pitch: int:
+	set(value):
+		pitch = clampi(value, 0, 255)
+@export_range(0, 255) var mouth: int:
+	set(value):
+		mouth = clampi(value, 0, 255)
+@export_range(0, 255) var throat: int:
+	set(value):
+		throat = clampi(value, 0, 255)
+@export var singing: bool = false
+@export var phonetic: bool = true
 
+var _audio_stream_callback: Callable
 var _current_player
-var _interrupt = false
-var _player
-var _player2D
-var _sample: AudioStreamSample
-var _queue = []
-
-onready var _gdsam = preload("res://addons/gdsam/bin/gdsam.gdns").new()
+var _interrupt: bool = false
+var _queue: Array[String] = []
+var _sample: AudioStreamWAV
+var _synth: GDSAMSynth = GDSAMSynth.new()
 
 
-func _ready():
-	_player = AudioStreamPlayer.new()
-	_player2D = AudioStreamPlayer2D.new()
-	_sample = AudioStreamSample.new()
+func _ready() -> void:
+	_sample = AudioStreamWAV.new()
 	_sample.mix_rate = 22050
-	_sample.format = AudioStreamSample.FORMAT_8_BITS
-	add_child(_player)
-	add_child(_player2D)
+	_sample.format = AudioStreamWAV.FORMAT_8_BITS
+	set_voice_default()
 
 
-func speak(input: String, positional: bool = false):
+# Generates synthesized speech from the provided input and plays it with the specified audio player.
+# - audio_stream_player: An AudioStreamPlayer or AudioStreamPlayer2D used to play the sample.
+# - input: The text to speak.
+func speak(audio_stream_player, input: String) -> void:
+	_current_player = audio_stream_player
 	_interrupt = false
 	_configure_sam()
-	_current_player = _player if not positional else _player2D
-	_configure_player(_current_player)
 	_enqueue_phrases(input)
 	_process_queue()
 
 
-func speak2D(input: String, position: Vector2):
-	_player2D.position = position
-	speak(input, true)
+# Determines if any speech is currently playing.
+func is_playing() -> bool:
+	if not _current_player:
+		return false
+	return _current_player.playing
 
 
-func interrupt():
+# Interrupts the currently playing speech, if any. No further phrases will be played and 
+# the finished_speaking signal will be emitted.
+func interrupt() -> void:
 	_interrupt = true
-	if _current_player:
-		_current_player.stop()
+	stop()
 
 
-func stop():
-	if _player.playing:
-		_player.stop()
-	if _player2D.playing:
-		_player2D.stop()
+# Stops the currently playing speech, if any. This does not interrupt and the next phrase will 
+# still play if it is available.
+func stop() -> void:
+	if not _current_player:
+		return
+	_current_player.stop()
 
 
-func get_player() -> AudioStreamPlayer:
-	return _player as AudioStreamPlayer
+# Sets the audio stream callback function. If provided your function will be passed the audio 
+# buffer as a PackedByteArray and you will be expected to return a valid AudioStreamWAV to play. 
+# This function allows you to manipulate the stream before it is played.
+#
+# The mix rate should be 22050.
+# The format should be FORAMT_8_BITS.
+#
+# Example callback function that simply returns the provided buffer:
+# func my_callback(buffer: PackedByteArray) -> AudioStreamWAV:
+# 	var stream = AudioStreamWAV.new()
+#	stream.data = buffer
+#	return stream
+func set_audio_stream_callback(callback: Callable) -> void:
+	_audio_stream_callback = callback
 
 
-func get_player2D() -> AudioStreamPlayer2D:
-	return _player2D as AudioStreamPlayer2D
+# Sets the default SAM voice.
+func set_voice_default() -> void:
+	speed = 72
+	pitch = 64
+	mouth = 128
+	throat = 128
 
 
-func set_voice_default():
-	speed = DEFAULT_SPEED
-	pitch = DEFAULT_PITCH
-	mouth = DEFAULT_MOUTH
-	throat = DEFAULT_THROAT
-	singing = DEFAULT_SINGING
-	phonetic = DEFAULT_PHONETIC
-
-
-func set_voice_elf():
+# Sets the 'elf' voice type.
+func set_voice_elf() -> void:
 	speed = 72
 	pitch = 64
 	mouth = 110
 	throat = 160
 
 
-func set_voice_alien():
+# Sets the 'alien' voice type.
+func set_voice_alien() -> void:
 	speed = 42
 	pitch = 60
 	mouth = 190
 	throat = 190
 
 
-func set_voice_stuffy():
+# Sets the 'stuffy' voice type.
+func set_voice_stuffy() -> void:
 	speed = 82
 	pitch = 72
 	throat = 105
 	mouth = 110
 
 
-func set_voice_old_lady():
+# Sets the 'old lady' voice type.
+func set_voice_old_lady() -> void:
 	speed = 72
 	pitch = 32
 	mouth = 145
 	throat = 145
 
 
-func _enqueue_phrases(input: String):
+func _enqueue_phrases(input: String) -> void:
 	_queue.clear()
 	_create_phrases(input)
 
 
-func _create_phrases(input: String):
+func _create_phrases(input: String) -> void:
 	if input.length() <= MAX_CHARS:
 		_queue.append(input)
 		return
@@ -140,38 +149,34 @@ func _create_phrases(input: String):
 		_create_phrases(input.substr(i + 1))
 
 
-func _configure_sam():
-	_gdsam.set_speed(speed)
-	_gdsam.set_pitch(pitch)
-	_gdsam.set_mouth(mouth)
-	_gdsam.set_throat(throat)
-	_gdsam.set_singing(singing)
-	_gdsam.set_phonetic(phonetic)
+func _configure_sam() -> void:
+	_synth.set_speed(speed)
+	_synth.set_pitch(pitch)
+	_synth.set_mouth(mouth)
+	_synth.set_throat(throat)
+	_synth.set_singing(singing)
+	_synth.set_phonetic(phonetic)
 
 
-func _configure_player(player):
-	player.bus = audio_bus
-	player.volume_db = linear2db(volume)
-
-
-func _process_queue():
+func _process_queue() -> void:
 	if _interrupt or _queue.size() == 0:
-		emit_signal("finished_speaking")
+		finished_speaking.emit()
 		return
 	var phrase = _queue.pop_front()
-	var buffer = _gdsam.speak(phrase) as PoolByteArray
-	if not buffer:
+	var buffer = _synth.speak(phrase) as PackedByteArray
+	if buffer.size() == 0:
 		return
-	var callback = BufferCallback.new()
-	emit_signal("loaded_buffer", buffer, callback)
-	if _current_player.playing:
-		_current_player.stop()
-	if not callback.audio_stream_override:
-		_sample.data = buffer
-		_current_player.stream = _sample
+	if is_playing():
+		stop()
+	var stream: AudioStreamWAV
+	if _audio_stream_callback:
+		stream = await _audio_stream_callback.call(buffer)
 	else:
-		_current_player.stream = callback.audio_stream_override
+		_sample.data = buffer
+		stream = _sample
+	_current_player.stream = stream
 	_current_player.play()
-	yield(_current_player, "finished")
-	emit_signal("finished_phrase")
+	started_phrase.emit(phrase)
+	await _current_player.finished
+	finished_phrase.emit(phrase)
 	_process_queue()
