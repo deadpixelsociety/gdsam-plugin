@@ -9,16 +9,16 @@ signal finished_phrase(phrase)
 # Limit the number of characters per phrase as SAM has a buffer limit.
 const MAX_CHARS = 90
 
-@export_range(0, 255) var speed: int:
+@export_range(0, 255) var speed: int = 72:
 	set(value):
 		speed = clampi(value, 0, 255)
-@export_range(0, 255) var pitch: int:
+@export_range(0, 255) var pitch: int = 64:
 	set(value):
 		pitch = clampi(value, 0, 255)
-@export_range(0, 255) var mouth: int:
+@export_range(0, 255) var mouth: int = 128:
 	set(value):
 		mouth = clampi(value, 0, 255)
-@export_range(0, 255) var throat: int:
+@export_range(0, 255) var throat: int = 128:
 	set(value):
 		throat = clampi(value, 0, 255)
 @export var singing: bool = false
@@ -36,7 +36,6 @@ func _ready() -> void:
 	_sample = AudioStreamWAV.new()
 	_sample.mix_rate = 22050
 	_sample.format = AudioStreamWAV.FORMAT_8_BITS
-	set_voice_default()
 
 
 # Generates synthesized speech from the provided input and plays it with the specified audio player.

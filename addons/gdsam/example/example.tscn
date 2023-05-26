@@ -17,10 +17,6 @@ script = ExtResource("1_83e07")
 
 [node name="GDSAM" type="Node" parent="."]
 script = ExtResource("2_16vdr")
-speed = 72
-pitch = 64
-mouth = 128
-throat = 128
 
 [node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
 volume_db = -10.0
