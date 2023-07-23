@@ -1,9 +1,13 @@
 [configuration]
 
 entry_symbol = "gdsam_init"
+compatibility_minimum = 4.1
 
 [libraries]
 
-macos = "macos/gdsam.dylib"
-windows = "windows/gdsam.dll"
-linux = "linux/libgdsam.so"
+macos.debug = "macos/gdsam.macos.framework/libgdsam.debug"
+macos.release = "macos/gdsam.macos.framework/libgdsam.release"
+windows.debug.x86_64 = "windows/gdsam.debug.dll"
+windows.release.x86_64 = "windows/gdsam.release.dll"
+linux.debug.x86_64 = "linux/libgdsam.debug.so"
+linux.release.x86_64 = "linux/libgdsam.release.so"
