@@ -5,8 +5,8 @@ compatibility_minimum = 4.1
 
 [libraries]
 
-macos.debug = "macos/libgdsam.debug"
-macos.release = "macos/libgdsam.release"
+macos.debug = "macos/gdsam.macos.framework/libgdsam.debug"
+macos.release = "macos/gdsam.macos.framework/libgdsam.release"
 windows.debug.x86_64 = "windows/gdsam.debug.dll"
 windows.release.x86_64 = "windows/gdsam.release.dll"
 linux.debug.x86_64 = "linux/libgdsam.debug.so"
