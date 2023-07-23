@@ -1,9 +1,10 @@
 # gdsam-plugin
-Godot 4+ Plugin for SAM (Software Automatic Mouth)
+Godot 4.1+ Plugin for SAM (Software Automatic Mouth)
 
 A GDExtension library wrapper around the C port of SAM by Sebastian Macke over at https://github.com/s-macke/SAM.
 
 The Godot 3.5 version of this plugin is still available on the [3.5 branch](https://github.com/deadpixelsociety/gdsam-plugin/tree/3.5).
+The Godot 4.0 version of this plugin is still available on the [4.0 branch](https://github.com/deadpixelsociety/gdsam-plugin/tree/4.0).
 
 **NOTICE: There are breaking changes from the 3.5 version of this plugin. Please see the usage below and the example scene provided.**
 
