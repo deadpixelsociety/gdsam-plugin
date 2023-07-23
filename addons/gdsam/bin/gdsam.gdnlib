@@ -7,9 +7,9 @@ reloadable=true
 
 [entry]
 
-OSX.64="res://addons/gdsam/bin/macos/gdsam.dylib"
-Windows.64="res://addons/gdsam/bin/windows/gdsam.dll"
-X11.64="res://addons/gdsam/bin/linuxbsd/gdsam.so"
+OSX.64="res://addons/gdsam/bin/macos/libgdsam.release.dylib"
+Windows.64="res://addons/gdsam/bin/windows/gdsam.release.dll"
+X11.64="res://addons/gdsam/bin/linuxbsd/libgdsam.release.so"
 
 [dependencies]
 
