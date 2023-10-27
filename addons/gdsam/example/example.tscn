@@ -124,7 +124,6 @@ text = "Phonetic"
 [node name="Phonetic" type="CheckBox" parent="PanelContainer/MarginContainer/VBoxContainer/GridContainer"]
 unique_name_in_owner = true
 layout_mode = 2
-button_pressed = true
 
 [node name="VoiceLabel" type="Label" parent="PanelContainer/MarginContainer/VBoxContainer/GridContainer"]
 unique_name_in_owner = true
