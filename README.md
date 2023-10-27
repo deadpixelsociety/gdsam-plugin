@@ -17,7 +17,7 @@ Usage:
 * Call ```interrupt()``` to interrupt any queued phrases.
 * (Optionally) Provide your own callback to ```set_audio_stream_callback(callback)``` to grab the buffered speech data and provide your own audio stream before it is played.
 * Play with the ```speed```, ```pitch```, ```mouth``` and ```throat``` settings to modify the voice. Experiment!
-* GDSAM can speak plain text when ```phonetic``` is set, or it can be disabled and you can provide your own phonemes. See the [original documentation](https://archive.org/details/user_manual_s.a.m./page/n15/mode/2up) for some examples.
+* GDSAM can speak plain text when ```phonetic``` is false, or it can be enabled and you can provide your own phonemes. See the [original documentation](https://archive.org/details/user_manual_s.a.m./page/n15/mode/2up) for some examples.
 * Some stock voices are included based on the original demo.
   * ```set_voice_default()```
   * ```set_voice_elf()```

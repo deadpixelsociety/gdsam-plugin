@@ -22,7 +22,7 @@ const MAX_CHARS = 90
 	set(value):
 		throat = clampi(value, 0, 255)
 @export var singing: bool = false
-@export var phonetic: bool = true
+@export var phonetic: bool = false
 
 var _audio_stream_callback: Callable
 var _current_player
