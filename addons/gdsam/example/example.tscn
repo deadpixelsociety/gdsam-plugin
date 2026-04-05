@@ -1,12 +1,12 @@
-[gd_scene load_steps=4 format=3 uid="uid://ry6usoufd0bl"]
+[gd_scene format=3 uid="uid://ry6usoufd0bl"]
 
-[ext_resource type="Script" path="res://addons/gdsam/example/example.gd" id="1_83e07"]
-[ext_resource type="Script" path="res://addons/gdsam/gdsam.gd" id="2_16vdr"]
+[ext_resource type="Script" uid="uid://dj3b4avs776df" path="res://addons/gdsam/example/example.gd" id="1_83e07"]
+[ext_resource type="Script" uid="uid://cu45157h51qmr" path="res://addons/gdsam/gdsam.gd" id="2_16vdr"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_idvfy"]
 font_size = 48
 
-[node name="Example" type="Control"]
+[node name="Example" type="Control" unique_id=2058569885]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -15,13 +15,13 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_83e07")
 
-[node name="GDSAM" type="Node" parent="."]
+[node name="GDSAM" type="Node" parent="." unique_id=1737002367]
 script = ExtResource("2_16vdr")
 
-[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="." unique_id=1265389155]
 volume_db = -10.0
 
-[node name="PanelContainer" type="PanelContainer" parent="."]
+[node name="PanelContainer" type="PanelContainer" parent="." unique_id=2029094997]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -35,106 +35,106 @@ offset_bottom = 20.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="MarginContainer" type="MarginContainer" parent="PanelContainer"]
+[node name="MarginContainer" type="MarginContainer" parent="PanelContainer" unique_id=2030489558]
 layout_mode = 2
 theme_override_constants/margin_left = 32
 theme_override_constants/margin_top = 32
 theme_override_constants/margin_right = 32
 theme_override_constants/margin_bottom = 32
 
-[node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer/MarginContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer/MarginContainer" unique_id=1807387280]
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="Label" type="Label" parent="PanelContainer/MarginContainer/VBoxContainer"]
+[node name="Label" type="Label" parent="PanelContainer/MarginContainer/VBoxContainer" unique_id=1620669005]
 layout_mode = 2
 text = "GDSAM"
 label_settings = SubResource("LabelSettings_idvfy")
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="GridContainer" type="GridContainer" parent="PanelContainer/MarginContainer/VBoxContainer"]
+[node name="GridContainer" type="GridContainer" parent="PanelContainer/MarginContainer/VBoxContainer" unique_id=504054847]
 layout_mode = 2
 theme_override_constants/h_separation = 8
 theme_override_constants/v_separation = 8
 columns = 2
 
-[node name="SpeedLabel" type="Label" parent="PanelContainer/MarginContainer/VBoxContainer/GridContainer"]
+[node name="SpeedLabel" type="Label" parent="PanelContainer/MarginContainer/VBoxContainer/GridContainer" unique_id=731737947]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Speed"
 
-[node name="Speed" type="HSlider" parent="PanelContainer/MarginContainer/VBoxContainer/GridContainer"]
+[node name="Speed" type="HSlider" parent="PanelContainer/MarginContainer/VBoxContainer/GridContainer" unique_id=769343461]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 max_value = 255.0
 
-[node name="PitchLabel" type="Label" parent="PanelContainer/MarginContainer/VBoxContainer/GridContainer"]
+[node name="PitchLabel" type="Label" parent="PanelContainer/MarginContainer/VBoxContainer/GridContainer" unique_id=2144255058]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Pitch"
 
-[node name="Pitch" type="HSlider" parent="PanelContainer/MarginContainer/VBoxContainer/GridContainer"]
+[node name="Pitch" type="HSlider" parent="PanelContainer/MarginContainer/VBoxContainer/GridContainer" unique_id=754038017]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 max_value = 255.0
 
-[node name="MouthLabel" type="Label" parent="PanelContainer/MarginContainer/VBoxContainer/GridContainer"]
+[node name="MouthLabel" type="Label" parent="PanelContainer/MarginContainer/VBoxContainer/GridContainer" unique_id=1262887977]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Mouth"
 
-[node name="Mouth" type="HSlider" parent="PanelContainer/MarginContainer/VBoxContainer/GridContainer"]
+[node name="Mouth" type="HSlider" parent="PanelContainer/MarginContainer/VBoxContainer/GridContainer" unique_id=1383253862]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 max_value = 255.0
 
-[node name="ThroatLabel" type="Label" parent="PanelContainer/MarginContainer/VBoxContainer/GridContainer"]
+[node name="ThroatLabel" type="Label" parent="PanelContainer/MarginContainer/VBoxContainer/GridContainer" unique_id=661471899]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Throat"
 
-[node name="Throat" type="HSlider" parent="PanelContainer/MarginContainer/VBoxContainer/GridContainer"]
+[node name="Throat" type="HSlider" parent="PanelContainer/MarginContainer/VBoxContainer/GridContainer" unique_id=1606732336]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 max_value = 255.0
 
-[node name="SingingLabel" type="Label" parent="PanelContainer/MarginContainer/VBoxContainer/GridContainer"]
+[node name="SingingLabel" type="Label" parent="PanelContainer/MarginContainer/VBoxContainer/GridContainer" unique_id=1351906817]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Singing"
 
-[node name="Singing" type="CheckBox" parent="PanelContainer/MarginContainer/VBoxContainer/GridContainer"]
+[node name="Singing" type="CheckBox" parent="PanelContainer/MarginContainer/VBoxContainer/GridContainer" unique_id=1253201258]
 unique_name_in_owner = true
 layout_mode = 2
 
-[node name="PhoneticLabel" type="Label" parent="PanelContainer/MarginContainer/VBoxContainer/GridContainer"]
+[node name="PhoneticLabel" type="Label" parent="PanelContainer/MarginContainer/VBoxContainer/GridContainer" unique_id=185796262]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Phonetic"
 
-[node name="Phonetic" type="CheckBox" parent="PanelContainer/MarginContainer/VBoxContainer/GridContainer"]
+[node name="Phonetic" type="CheckBox" parent="PanelContainer/MarginContainer/VBoxContainer/GridContainer" unique_id=1145382594]
 unique_name_in_owner = true
 layout_mode = 2
 
-[node name="VoiceLabel" type="Label" parent="PanelContainer/MarginContainer/VBoxContainer/GridContainer"]
+[node name="VoiceLabel" type="Label" parent="PanelContainer/MarginContainer/VBoxContainer/GridContainer" unique_id=1425529491]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Voices"
 
-[node name="Voice" type="OptionButton" parent="PanelContainer/MarginContainer/VBoxContainer/GridContainer"]
+[node name="Voice" type="OptionButton" parent="PanelContainer/MarginContainer/VBoxContainer/GridContainer" unique_id=428020175]
 unique_name_in_owner = true
 layout_mode = 2
-item_count = 5
 selected = 0
+item_count = 5
 popup/item_0/text = "SAM"
 popup/item_0/id = 0
 popup/item_1/text = "Elf"
@@ -146,22 +146,22 @@ popup/item_3/id = 3
 popup/item_4/text = "Old Lady"
 popup/item_4/id = 4
 
-[node name="Input" type="LineEdit" parent="PanelContainer/MarginContainer/VBoxContainer"]
+[node name="Input" type="LineEdit" parent="PanelContainer/MarginContainer/VBoxContainer" unique_id=871573498]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(640, 0)
 layout_mode = 2
 placeholder_text = "Text to speak..."
 
-[node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/MarginContainer/VBoxContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/MarginContainer/VBoxContainer" unique_id=1869986857]
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="Speak" type="Button" parent="PanelContainer/MarginContainer/VBoxContainer/HBoxContainer"]
+[node name="Speak" type="Button" parent="PanelContainer/MarginContainer/VBoxContainer/HBoxContainer" unique_id=875840690]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Speak"
 
-[node name="Interrupt" type="Button" parent="PanelContainer/MarginContainer/VBoxContainer/HBoxContainer"]
+[node name="Interrupt" type="Button" parent="PanelContainer/MarginContainer/VBoxContainer/HBoxContainer" unique_id=500024305]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Interrupt"
