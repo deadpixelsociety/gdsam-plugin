@@ -3,10 +3,11 @@ extends Node
 class_name GDSAM
 
 signal finished_speaking()
+signal synthesis_failed(phrase: String, message: String)
 signal started_phrase(phrase)
 signal finished_phrase(phrase)
 
-# Limit the number of characters per phrase as SAM has a buffer limit.
+# Target phrase length for playback callbacks; native synthesis checks its own capacities.
 const MAX_CHARS = 90
 
 @export_range(0, 255) var speed: int = 72:
@@ -132,20 +133,39 @@ func _enqueue_phrases(input: String) -> void:
 	_create_phrases(input)
 
 
+# Two-character SAM tokens. Stress digits belong to the preceding token.
+const PHONEME_PAIRS = ["IY", "IH", "EH", "AE", "AA", "AH", "AO", "UH", "AX", "IX", "ER",
+	"UX", "OH", "RX", "LX", "WX", "YX", "WH", "NX", "DX", "SH", "TH", "/H", "/X",
+	"ZH", "DH", "CH", "EY", "AY", "OY", "AW", "OW", "UW", "GX", "KX", "UL", "UM", "UN"]
+
+
 func _create_phrases(input: String) -> void:
-	if input.length() <= MAX_CHARS:
-		_queue.append(input)
-		return
-	var phrase = input.substr(0, MAX_CHARS)
-	var i = phrase.length() - 1
-	while phrase[i] != ' ' and i >= 0:
-		i -= 1
-	if i <= 0:
-		_queue.append(phrase)
-		_create_phrases(input.substr(MAX_CHARS + 1))
-	else:
-		_queue.append(phrase.substr(0, i))
-		_create_phrases(input.substr(i + 1))
+	var offset = 0
+	while offset < input.length():
+		var end = mini(offset + MAX_CHARS, input.length())
+		if phonetic:
+			var cursor = offset
+			var token_end = offset
+			while cursor < input.length():
+				var width = 2 if input.substr(cursor, 2).to_upper() in PHONEME_PAIRS else 1
+				var next = cursor + width
+				while next < input.length() and input[next] in "12345678":
+					next += 1
+				if next > end and token_end > offset:
+					break
+				token_end = next
+				cursor = next
+				if cursor >= end:
+					break
+			end = token_end
+		if end < input.length():
+			var space = input.substr(offset, end - offset).rfind(" ")
+			if space > 0:
+				_queue.append(input.substr(offset, space))
+				offset += space + 1
+				continue
+		_queue.append(input.substr(offset, end - offset))
+		offset = end
 
 
 func _configure_sam() -> void:
@@ -158,13 +178,24 @@ func _configure_sam() -> void:
 
 
 func _process_queue() -> void:
-	if _interrupt or _queue.size() == 0:
-		finished_speaking.emit()
-		return
-	var phrase = _queue.pop_front()
-	var buffer = _synth.speak(phrase) as PackedByteArray
-	if buffer.size() == 0:
-		return
+	var phrase: String
+	var buffer: PackedByteArray
+	while true:
+		if _interrupt or _queue.size() == 0:
+			finished_speaking.emit()
+			return
+		phrase = _queue.pop_front()
+		if phrase.strip_edges().is_empty():
+			continue
+		buffer = _synth.speak(phrase)
+		var message = _synth.get_last_error()
+		if not message.is_empty():
+			_queue.clear()
+			synthesis_failed.emit(phrase, message)
+			finished_speaking.emit()
+			return
+		if not buffer.is_empty():
+			break
 	if is_playing():
 		stop()
 	var stream: AudioStreamWAV
